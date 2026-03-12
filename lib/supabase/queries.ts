@@ -3,6 +3,7 @@ import { createClient, createAdminClient } from './server';
 import type {
   Profile,
   Service,
+  ServicePrice,
   ServiceWithPrices,
   ClientServiceWithDetails,
   ActivityLog,
@@ -137,6 +138,58 @@ export async function updateService(id: string, updates: Partial<Service>) {
 
   if (error) throw error;
   return data;
+}
+
+export async function deleteService(id: string) {
+  const admin = createAdminClient();
+  const { error } = await admin
+    .from('services')
+    .delete()
+    .eq('id', id);
+
+  if (error) throw error;
+}
+
+// ============================================
+// SERVICE PRICES
+// ============================================
+
+export async function createServicePrice(price: Omit<ServicePrice, 'id'>) {
+  const admin = createAdminClient();
+  const { data, error } = await admin
+    .from('service_prices')
+    .insert(price)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+export async function updateServicePrice(
+  id: string,
+  updates: Partial<Omit<ServicePrice, 'id' | 'service_id'>>
+) {
+  const admin = createAdminClient();
+  const { data, error } = await admin
+    .from('service_prices')
+    .update(updates)
+    .eq('id', id)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+export async function deleteServicePrice(id: string) {
+  const admin = createAdminClient();
+  const { error } = await admin
+    .from('service_prices')
+    .delete()
+    .eq('id', id);
+
+  if (error) throw error;
 }
 
 // ============================================
